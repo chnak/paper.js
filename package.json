@@ -39,11 +39,6 @@
   "engines": {
     "node": ">=8.0.0"
   },
-  "husky": {
-    "hooks": {
-      "pre-commit": "yarn jshint --ensure-branch develop",
-      "pre-push": "yarn test --ensure-branch develop"
-    }
   },
   "browser": {
     "./dist/node/extend.js": false,
