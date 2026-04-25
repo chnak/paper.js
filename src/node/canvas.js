@@ -43,19 +43,22 @@ module.exports = function(self, requireName) {
         idlUtils = null;
     }
 
+    // 获取 impl 的辅助函数（仅用于旧版 jsdom）
+    function getImpl(wrapper) {
+        try {
+            return idlUtils.implForWrapper(wrapper);
+        } catch(e) {
+            return null;
+        }
+    }
+
     // 获取底层 canvas 的辅助函数
     function getCanvasFromWrapper(wrapper) {
         if (!wrapper) return null;
         // 优先尝试 implForWrapper（旧版 jsdom）
         if (idlUtils) {
-            try {
-                var impl = idlUtils.implForWrapper(wrapper);
-                if (impl && impl._canvas) return impl._canvas;
-            } catch(e) {}
-        }
-        // 新版 jsdom: wrapper 自身就是底层 canvas
-        if (wrapper.width && wrapper.height) {
-            return wrapper;
+            var impl = getImpl(wrapper);
+            if (impl && impl._canvas) return impl._canvas;
         }
         return null;
     }
@@ -68,10 +71,10 @@ module.exports = function(self, requireName) {
         },
         set: function(w) {
             _widthDescriptor.set.call(this, w);
-            // Sync to underlying @napi-rs/canvas
-            var canvas = getCanvasFromWrapper(this);
-            if (canvas) {
-                canvas.width = w;
+            // Sync to underlying @napi-rs/canvas (only for old jsdom with impl._canvas)
+            var impl = idlUtils && getImpl(this);
+            if (impl && impl._canvas) {
+                impl._canvas.width = w;
             }
         }
     });
@@ -84,10 +87,10 @@ module.exports = function(self, requireName) {
         },
         set: function(h) {
             _heightDescriptor.set.call(this, h);
-            // Sync to underlying @napi-rs/canvas
-            var canvas = getCanvasFromWrapper(this);
-            if (canvas) {
-                canvas.height = h;
+            // Sync to underlying @napi-rs/canvas (only for old jsdom with impl._canvas)
+            var impl = idlUtils && getImpl(this);
+            if (impl && impl._canvas) {
+                impl._canvas.height = h;
             }
         }
     });
@@ -102,7 +105,7 @@ module.exports = function(self, requireName) {
         set: function(type) {
             // Allow replacement of internal node-canvas, so we can switch to a
             // PDF canvas.
-            var impl = idlUtils ? idlUtils.implForWrapper(this) : null,
+            var impl = idlUtils ? getImpl(this) : null,
                 size = impl && impl._canvas ? impl._canvas : (this._canvas || this);
             var newCanvas = new Canvas(size.width || 1, size.height || 1, type);
             if (impl) {
