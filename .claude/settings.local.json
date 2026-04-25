@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cd D:/date/20260415/paper.js && npm publish 2>&1)",
+      "Bash(cd D:/date/20260415/paper.js && npm uninstall gulp-shell --legacy-peer-deps)"
+    ]
+  }
+}

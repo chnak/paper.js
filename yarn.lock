@@ -32,6 +32,49 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@chnak/paper@workspace:.":
+  version: 0.0.0-use.local
+  resolution: "@chnak/paper@workspace:."
+  dependencies:
+    acorn: ~0.5.0
+    ansi-colors: ^4.1.3
+    canvas: "npm:@napi-rs/canvas@^0.1.99"
+    del: ^5.1.0
+    fancy-log: ^1.3.3
+    gulp: ^3.9.1
+    gulp-cached: ^1.1.1
+    gulp-git-streamed: ^2.10.1
+    gulp-jshint: ^2.1.0
+    gulp-json-modifier: ^1.0.0
+    gulp-prepro: ^2.4.0
+    gulp-qunits: ^2.1.2
+    gulp-rename: ^2.0.0
+    gulp-shell: ^0.8.0
+    gulp-symlink: ^2.1.4
+    gulp-uglify: ^3.0.2
+    gulp-uncomment: ^0.3.0
+    gulp-webserver: ^0.9.1
+    gulp-whitespace: ^0.1.0
+    gulp-zip: ^5.1.0
+    husky: ^4.3.8
+    jsdom: ^16.7.0
+    jshint: ^2.13.6
+    jshint-summary: ^0.4.0
+    merge-stream: ^2.0.0
+    minimist: ^1.2.8
+    mustache: ^4.2.0
+    prepro: ^2.4.0
+    qunitjs: ^1.23.1
+    require-dir: ^1.2.0
+    resemblejs: ^3.2.5
+    run-sequence: ^2.2.1
+    source-map-support: ^0.5.21
+    stats.js: ^0.17.0
+    straps: ^3.0.1
+    typescript: ^3.9.10
+  languageName: unknown
+  linkType: soft
+
 "@mapbox/node-pre-gyp@npm:^1.0.0":
   version: 1.0.10
   resolution: "@mapbox/node-pre-gyp@npm:1.0.10"
@@ -48,6 +91,83 @@ __metadata:
   bin:
     node-pre-gyp: bin/node-pre-gyp
   checksum: 1a98db05d955b74dad3814679593df293b9194853698f3f5f1ed00ecd93128cdd4b14fb8767fe44ac6981ef05c23effcfdc88710e7c1de99ccb6f647890597c8
+  languageName: node
+  linkType: hard
+
+"@napi-rs/canvas-android-arm64@npm:0.1.99":
+  version: 0.1.99
+  resolution: "@napi-rs/canvas-android-arm64@npm:0.1.99"
+  conditions: os=android & cpu=arm64
+  languageName: node
+  linkType: hard
+
+"@napi-rs/canvas-darwin-arm64@npm:0.1.99":
+  version: 0.1.99
+  resolution: "@napi-rs/canvas-darwin-arm64@npm:0.1.99"
+  conditions: os=darwin & cpu=arm64
+  languageName: node
+  linkType: hard
+
+"@napi-rs/canvas-darwin-x64@npm:0.1.99":
+  version: 0.1.99
+  resolution: "@napi-rs/canvas-darwin-x64@npm:0.1.99"
+  conditions: os=darwin & cpu=x64
+  languageName: node
+  linkType: hard
+
+"@napi-rs/canvas-linux-arm-gnueabihf@npm:0.1.99":
+  version: 0.1.99
+  resolution: "@napi-rs/canvas-linux-arm-gnueabihf@npm:0.1.99"
+  conditions: os=linux & cpu=arm
+  languageName: node
+  linkType: hard
+
+"@napi-rs/canvas-linux-arm64-gnu@npm:0.1.99":
+  version: 0.1.99
+  resolution: "@napi-rs/canvas-linux-arm64-gnu@npm:0.1.99"
+  conditions: os=linux & cpu=arm64 & libc=glibc
+  languageName: node
+  linkType: hard
+
+"@napi-rs/canvas-linux-arm64-musl@npm:0.1.99":
+  version: 0.1.99
+  resolution: "@napi-rs/canvas-linux-arm64-musl@npm:0.1.99"
+  conditions: os=linux & cpu=arm64 & libc=musl
+  languageName: node
+  linkType: hard
+
+"@napi-rs/canvas-linux-riscv64-gnu@npm:0.1.99":
+  version: 0.1.99
+  resolution: "@napi-rs/canvas-linux-riscv64-gnu@npm:0.1.99"
+  conditions: os=linux & cpu=riscv64 & libc=glibc
+  languageName: node
+  linkType: hard
+
+"@napi-rs/canvas-linux-x64-gnu@npm:0.1.99":
+  version: 0.1.99
+  resolution: "@napi-rs/canvas-linux-x64-gnu@npm:0.1.99"
+  conditions: os=linux & cpu=x64 & libc=glibc
+  languageName: node
+  linkType: hard
+
+"@napi-rs/canvas-linux-x64-musl@npm:0.1.99":
+  version: 0.1.99
+  resolution: "@napi-rs/canvas-linux-x64-musl@npm:0.1.99"
+  conditions: os=linux & cpu=x64 & libc=musl
+  languageName: node
+  linkType: hard
+
+"@napi-rs/canvas-win32-arm64-msvc@npm:0.1.99":
+  version: 0.1.99
+  resolution: "@napi-rs/canvas-win32-arm64-msvc@npm:0.1.99"
+  conditions: os=win32 & cpu=arm64
+  languageName: node
+  linkType: hard
+
+"@napi-rs/canvas-win32-x64-msvc@npm:0.1.99":
+  version: 0.1.99
+  resolution: "@napi-rs/canvas-win32-x64-msvc@npm:0.1.99"
+  conditions: os=win32 & cpu=x64
   languageName: node
   linkType: hard
 
@@ -703,6 +823,52 @@ __metadata:
     node-gyp: latest
     simple-get: ^3.0.3
   checksum: 61e554aef80022841dc836964534082ec21435928498032562089dfb7736215f039c7d99ee546b0cf10780232d9bf310950f8b4d489dc394e0fb6f6adfc97994
+  languageName: node
+  linkType: hard
+
+"canvas@npm:@napi-rs/canvas@^0.1.99":
+  version: 0.1.99
+  resolution: "@napi-rs/canvas@npm:0.1.99"
+  dependencies:
+    "@napi-rs/canvas-android-arm64": 0.1.99
+    "@napi-rs/canvas-darwin-arm64": 0.1.99
+    "@napi-rs/canvas-darwin-x64": 0.1.99
+    "@napi-rs/canvas-linux-arm-gnueabihf": 0.1.99
+    "@napi-rs/canvas-linux-arm64-gnu": 0.1.99
+    "@napi-rs/canvas-linux-arm64-musl": 0.1.99
+    "@napi-rs/canvas-linux-riscv64-gnu": 0.1.99
+    "@napi-rs/canvas-linux-x64-gnu": 0.1.99
+    "@napi-rs/canvas-linux-x64-musl": 0.1.99
+    "@napi-rs/canvas-win32-arm64-msvc": 0.1.99
+    "@napi-rs/canvas-win32-x64-msvc": 0.1.99
+  dependenciesMeta:
+    "@napi-rs/canvas-android-arm64":
+      optional: true
+    "@napi-rs/canvas-darwin-arm64":
+      optional: true
+    "@napi-rs/canvas-darwin-x64":
+      optional: true
+    "@napi-rs/canvas-linux-arm-gnueabihf":
+      optional: true
+    "@napi-rs/canvas-linux-arm64-gnu":
+      optional: true
+    "@napi-rs/canvas-linux-arm64-musl":
+      optional: true
+    "@napi-rs/canvas-linux-riscv64-gnu":
+      optional: true
+    "@napi-rs/canvas-linux-x64-gnu":
+      optional: true
+    "@napi-rs/canvas-linux-x64-musl":
+      optional: true
+    "@napi-rs/canvas-win32-arm64-msvc":
+      optional: true
+    "@napi-rs/canvas-win32-x64-msvc":
+      optional: true
+    canvas:
+      built: true
+    skia-canvas:
+      built: true
+  checksum: a591aeee7617e549791424ad9139304ba348ea5dfe59bb1a2ac8e6889ceb7ae09e88ab2f750456c155028d2dd6ebf502b5bd75763f2ea3d496db516341e72a80
   languageName: node
   linkType: hard
 
@@ -4357,48 +4523,12 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"paper@0.12.18, paper@workspace:.":
-  version: 0.0.0-use.local
-  resolution: "paper@workspace:."
-  dependencies:
-    acorn: ~0.5.0
-    ansi-colors: ^4.1.3
-    canvas: ^2.11.2
-    del: ^5.1.0
-    fancy-log: ^1.3.3
-    gulp: ^3.9.1
-    gulp-cached: ^1.1.1
-    gulp-git-streamed: ^2.10.1
-    gulp-jshint: ^2.1.0
-    gulp-json-modifier: ^1.0.0
-    gulp-prepro: ^2.4.0
-    gulp-qunits: ^2.1.2
-    gulp-rename: ^2.0.0
-    gulp-shell: ^0.8.0
-    gulp-symlink: ^2.1.4
-    gulp-uglify: ^3.0.2
-    gulp-uncomment: ^0.3.0
-    gulp-webserver: ^0.9.1
-    gulp-whitespace: ^0.1.0
-    gulp-zip: ^5.1.0
-    husky: ^4.3.8
-    jsdom: ^16.7.0
-    jshint: ^2.13.6
-    jshint-summary: ^0.4.0
-    merge-stream: ^2.0.0
-    minimist: ^1.2.8
-    mustache: ^4.2.0
-    prepro: ^2.4.0
-    qunitjs: ^1.23.1
-    require-dir: ^1.2.0
-    resemblejs: ^3.2.5
-    run-sequence: ^2.2.1
-    source-map-support: ^0.5.21
-    stats.js: ^0.17.0
-    straps: ^3.0.1
-    typescript: ^3.9.10
-  languageName: unknown
-  linkType: soft
+"paper@npm:0.12.18":
+  version: 0.12.18
+  resolution: "paper@npm:0.12.18"
+  checksum: b535b577cf34a7ed1877c05592ecd8a7ac47d9642c094600c04c4cb39e351ce1308be512be68dbe7dc7c1d0d93f0e91204bf2cb454cdd58175ec31a52f05c65f
+  languageName: node
+  linkType: hard
 
 "parent-module@npm:^1.0.0":
   version: 1.0.1

@@ -16,7 +16,6 @@ var gulp = require('gulp'),
     del = require('del'),
     run = require('run-sequence'),
     git = require('gulp-git-streamed'),
-    shell = require('gulp-shell'),
     merge = require('merge-stream'),
     rename = require('gulp-rename'),
     jsonModifier = require('gulp-json-modifier'),
@@ -34,16 +33,9 @@ gulp.task('publish', function(callback) {
     if (options.branch !== 'develop') {
         throw new Error('Publishing is only allowed on the develop branch.');
     }
-    // publish:website comes before publish:release, so paperjs.zip file is gone
-    // before yarn npm publish:
     run(
         'publish:json',
         'publish:dist',
-        'publish:packages',
-        'publish:commit',
-        'publish:website',
-        'publish:release',
-        'publish:load',
         callback
     );
 });
@@ -67,18 +59,14 @@ gulp.task('publish:dist', ['zip']);
 
 gulp.task('publish:commit', ['publish:version'], function() {
     return gulp.src('.')
-        .pipe(shell('yarn install')) // Update yarn.lock
         .pipe(git.add())
         .pipe(git.commit(releaseMessage))
         .pipe(git.tag('v' + options.version, releaseMessage));
 });
 
-gulp.task('publish:release', function() {
+gulp.task('publish:release', ['publish:version'], function() {
     return gulp.src('.')
-        .pipe(git.checkout('master'))
-        .pipe(git.merge('develop', { args: '-X theirs' }))
-        .pipe(git.push('origin', ['master', 'develop'], { args: '--tags' }))
-        .pipe(shell('yarn npm publish'));
+        .pipe(git.push('origin', 'develop', { args: '--tags' }));
 });
 
 gulp.task('publish:packages',
@@ -98,8 +86,7 @@ packages.forEach(function(name) {
                     paper: options.version
                 }
             }, jsonModifierOptions))
-            .pipe(gulp.dest(path))
-            .pipe(shell('yarn npm publish', opts));
+            .pipe(gulp.dest(path));
     });
 });
 
@@ -114,8 +101,7 @@ gulp.task('publish:website', function(callback) {
 });
 
 gulp.task('publish:website:build', [
-    'publish:website:json', 'publish:website:docs',
-    'publish:website:zip', 'publish:website:assets'
+    'publish:website:json', 'publish:website:zip', 'publish:website:assets'
 ]);
 
 gulp.task('publish:website:json', ['publish:version'], function() {
@@ -131,7 +117,7 @@ gulp.task('publish:website:docs:clean', function() {
 });
 
 gulp.task('publish:website:docs',
-    ['publish:version', 'publish:website:docs:clean', 'docs:server'],
+    ['publish:version', 'publish:website:docs:clean'],
 function() {
     return gulp.src('dist/serverdocs/**')
         .pipe(gulp.dest(referencePath));

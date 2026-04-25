@@ -37,6 +37,38 @@ module.exports = function(self, requireName) {
     var HTMLCanvasElement = self.HTMLCanvasElement,
         idlUtils = require('jsdom/lib/jsdom/living/generated/utils');
 
+    // Override width property to sync with underlying @napi-rs/canvas
+    var _widthDescriptor = Object.getOwnPropertyDescriptor(HTMLCanvasElement.prototype, 'width');
+    Object.defineProperty(HTMLCanvasElement.prototype, 'width', {
+        get: function() {
+            return _widthDescriptor.get.call(this);
+        },
+        set: function(w) {
+            _widthDescriptor.set.call(this, w);
+            // Sync to underlying @napi-rs/canvas
+            var impl = idlUtils.implForWrapper(this);
+            if (impl && impl._canvas) {
+                impl._canvas.width = w;
+            }
+        }
+    });
+
+    // Override height property to sync with underlying @napi-rs/canvas
+    var _heightDescriptor = Object.getOwnPropertyDescriptor(HTMLCanvasElement.prototype, 'height');
+    Object.defineProperty(HTMLCanvasElement.prototype, 'height', {
+        get: function() {
+            return _heightDescriptor.get.call(this);
+        },
+        set: function(h) {
+            _heightDescriptor.set.call(this, h);
+            // Sync to underlying @napi-rs/canvas
+            var impl = idlUtils.implForWrapper(this);
+            if (impl && impl._canvas) {
+                impl._canvas.height = h;
+            }
+        }
+    });
+
     // Add fake HTMLCanvasElement#type property:
     Object.defineProperty(HTMLCanvasElement.prototype, 'type', {
         get: function() {
