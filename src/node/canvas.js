@@ -34,8 +34,31 @@ module.exports = function(self, requireName) {
         return;
     }
 
-    var HTMLCanvasElement = self.HTMLCanvasElement,
+    var HTMLCanvasElement = self.HTMLCanvasElement || (self.window && self.window.HTMLCanvasElement),
+        idlUtils;
+    try {
         idlUtils = require('jsdom/lib/jsdom/living/generated/utils');
+    } catch(e) {
+        // jsdom >= 29 移除了 idlUtils，尝试使用其他方式获取 impl
+        idlUtils = null;
+    }
+
+    // 获取底层 canvas 的辅助函数
+    function getCanvasFromWrapper(wrapper) {
+        if (!wrapper) return null;
+        // 优先尝试 implForWrapper（旧版 jsdom）
+        if (idlUtils) {
+            try {
+                var impl = idlUtils.implForWrapper(wrapper);
+                if (impl && impl._canvas) return impl._canvas;
+            } catch(e) {}
+        }
+        // 新版 jsdom: wrapper 自身就是底层 canvas
+        if (wrapper.width && wrapper.height) {
+            return wrapper;
+        }
+        return null;
+    }
 
     // Override width property to sync with underlying @napi-rs/canvas
     var _widthDescriptor = Object.getOwnPropertyDescriptor(HTMLCanvasElement.prototype, 'width');
@@ -46,9 +69,9 @@ module.exports = function(self, requireName) {
         set: function(w) {
             _widthDescriptor.set.call(this, w);
             // Sync to underlying @napi-rs/canvas
-            var impl = idlUtils.implForWrapper(this);
-            if (impl && impl._canvas) {
-                impl._canvas.width = w;
+            var canvas = getCanvasFromWrapper(this);
+            if (canvas) {
+                canvas.width = w;
             }
         }
     });
@@ -62,9 +85,9 @@ module.exports = function(self, requireName) {
         set: function(h) {
             _heightDescriptor.set.call(this, h);
             // Sync to underlying @napi-rs/canvas
-            var impl = idlUtils.implForWrapper(this);
-            if (impl && impl._canvas) {
-                impl._canvas.height = h;
+            var canvas = getCanvasFromWrapper(this);
+            if (canvas) {
+                canvas.height = h;
             }
         }
     });
@@ -72,17 +95,23 @@ module.exports = function(self, requireName) {
     // Add fake HTMLCanvasElement#type property:
     Object.defineProperty(HTMLCanvasElement.prototype, 'type', {
         get: function() {
-            var canvas = idlUtils.implForWrapper(this)._canvas;
+            var canvas = getCanvasFromWrapper(this);
             return canvas && canvas.type || 'image';
         },
 
         set: function(type) {
             // Allow replacement of internal node-canvas, so we can switch to a
             // PDF canvas.
-            var impl = idlUtils.implForWrapper(this),
-                size = impl._canvas || impl;
-            impl._canvas = new Canvas(size.width, size.height, type);
-            impl._context = null;
+            var impl = idlUtils ? idlUtils.implForWrapper(this) : null,
+                size = impl && impl._canvas ? impl._canvas : (this._canvas || this);
+            var newCanvas = new Canvas(size.width || 1, size.height || 1, type);
+            if (impl) {
+                impl._canvas = newCanvas;
+            }
+            this._canvas = newCanvas;
+            if (impl) {
+                impl._context = null;
+            }
         }
     });
 
@@ -91,8 +120,11 @@ module.exports = function(self, requireName) {
         'createJPEGStream'];
     methods.forEach(function(key) {
         HTMLCanvasElement.prototype[key] = function() {
-            var canvas = idlUtils.implForWrapper(this)._canvas;
-            return canvas[key].apply(canvas, arguments);
+            var canvas = getCanvasFromWrapper(this);
+            if (canvas && typeof canvas[key] === 'function') {
+                return canvas[key].apply(canvas, arguments);
+            }
+            throw new Error('Unable to call ' + key + ' on canvas - no underlying canvas found');
         };
     });
 };

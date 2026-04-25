@@ -35,17 +35,31 @@ try {
 }
 
 if (jsdom) {
-    // Create our document and window objects through jsdom.
-    /* global document:true, window:true */
-    var document = new jsdom.JSDOM('<html><body></body></html>', {
-        // Use the current working directory as the document's origin, so
-        // requests to local files work correctly with CORS.
-        url: 'file://' + process.cwd() + '/',
-        resources: 'usable'
-    });
-    self = document.window;
-    require('./canvas.js')(self, requireName);
-    require('./xml.js')(self);
+    try {
+        // Create our document and window objects through jsdom.
+        /* global document:true, window:true */
+        var document = new jsdom.JSDOM('<html><body></body></html>', {
+            // Use the current working directory as the document's origin, so
+            // requests to local files work correctly with CORS.
+            url: 'file://' + process.cwd() + '/',
+            resources: 'usable'
+        });
+        self = document.window;
+        require('./canvas.js')(self, requireName);
+        require('./xml.js')(self);
+    } catch(innerError) {
+        // jsdom loaded but failed during initialization (e.g. parse5 version conflict)
+        // Fall back to minimal self without canvas integration
+        if (/\bjsdom\b/.test(requireName)) {
+            throw new Error('Unable to initialize jsdom: ' + innerError.message);
+        }
+        self = {
+            navigator: {
+                userAgent: 'Node.js (' + process.platform + '; U; rv:' +
+                        process.version + ')'
+            }
+        };
+    }
 } else {
     self = {
         navigator: {
