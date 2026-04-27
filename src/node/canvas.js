@@ -18,7 +18,7 @@
 module.exports = function(self, requireName) {
     var Canvas;
     try {
-        Canvas = require('canvas').Canvas;
+        Canvas = require('@napi-rs/canvas').Canvas;
     } catch(error) {
         // Remove `self.window`, so we still have the global `self` reference,
         // but no `window` object:
@@ -60,6 +60,8 @@ module.exports = function(self, requireName) {
             var impl = getImpl(wrapper);
             if (impl && impl._canvas) return impl._canvas;
         }
+        // 检查 wrapper._canvas（新版 jsdom 或直接设置的情况）
+        if (wrapper._canvas) return wrapper._canvas;
         return null;
     }
 
@@ -71,10 +73,14 @@ module.exports = function(self, requireName) {
         },
         set: function(w) {
             _widthDescriptor.set.call(this, w);
-            // Sync to underlying @napi-rs/canvas (only for old jsdom with impl._canvas)
+            // Sync to underlying @napi-rs/canvas
             var impl = idlUtils && getImpl(this);
             if (impl && impl._canvas) {
                 impl._canvas.width = w;
+            }
+            // Also sync to this._canvas (our wrapper)
+            if (this._canvas) {
+                this._canvas.width = w;
             }
         }
     });
@@ -87,10 +93,14 @@ module.exports = function(self, requireName) {
         },
         set: function(h) {
             _heightDescriptor.set.call(this, h);
-            // Sync to underlying @napi-rs/canvas (only for old jsdom with impl._canvas)
+            // Sync to underlying @napi-rs/canvas
             var impl = idlUtils && getImpl(this);
             if (impl && impl._canvas) {
                 impl._canvas.height = h;
+            }
+            // Also sync to this._canvas (our wrapper)
+            if (this._canvas) {
+                this._canvas.height = h;
             }
         }
     });
@@ -124,10 +134,29 @@ module.exports = function(self, requireName) {
     methods.forEach(function(key) {
         HTMLCanvasElement.prototype[key] = function() {
             var canvas = getCanvasFromWrapper(this);
+            if (!canvas && this._canvas) canvas = this._canvas;
             if (canvas && typeof canvas[key] === 'function') {
                 return canvas[key].apply(canvas, arguments);
             }
             throw new Error('Unable to call ' + key + ' on canvas - no underlying canvas found');
         };
     });
+
+    // Override getContext to use @napi-rs/canvas
+    var _getContextDescriptor = Object.getOwnPropertyDescriptor(HTMLCanvasElement.prototype, 'getContext');
+    HTMLCanvasElement.prototype.getContext = function(contextType) {
+        var canvas = getCanvasFromWrapper(this);
+        if (canvas) {
+            return canvas.getContext(contextType);
+        }
+        // 检查 this._canvas 是否直接可用（新版 jsdom 或直接包装的情况）
+        if (this._canvas && typeof this._canvas.getContext === 'function') {
+            return this._canvas.getContext(contextType);
+        }
+        // Fallback if no underlying canvas found
+        if (_getContextDescriptor) {
+            return _getContextDescriptor.value.call(this, contextType);
+        }
+        throw new Error('getContext not supported: no underlying canvas found');
+    };
 };
